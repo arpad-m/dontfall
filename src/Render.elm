@@ -44,18 +44,6 @@ randomizeBgCircle width height seed =
 
 listifyHelper (y, s) = ([y], s)
 
-generateRandList : Int -> (Seed -> (List o, Seed)) -> Seed -> (List o, Seed)
-generateRandList len rfn seed =
-    case len of
-        0 -> ([], seed)
-        len -> let (rlist, rseed) =
-                (generateRandList (len - 1) rfn seed)
-            in
-                let (c, nseed) =
-                    rfn rseed
-                in
-                    (c ++ rlist, nseed)
-
 backgroundColor : Color.Color
 backgroundColor = Color.rgb 30 19 67
 
