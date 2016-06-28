@@ -42,15 +42,15 @@ randomizeBgCircle width height seed =
     in
         (bgCircle xpos ypos csize, nseed)
 
-genCircleList : Int -> Float -> Float -> Seed -> (List Form, Seed)
-genCircleList len width height seed =
+generateRandList : Int -> (Seed -> (o, Seed)) -> Seed -> (List o, Seed)
+generateRandList len rfn seed =
     case len of
         0 -> ([], seed)
         len -> let (rlist, rseed) =
-                (genCircleList (len - 1) width height seed)
+                (generateRandList (len - 1) rfn seed)
             in
                 let (c, nseed) =
-                    randomizeBgCircle width height rseed
+                    rfn rseed
                 in
                     ([c] ++ rlist, nseed)
 
@@ -60,7 +60,7 @@ backgroundColor = Color.rgb 30 19 67
 background : Float -> Float -> Form
 background width height = group
     ([filled platformColor (rect width height)] ++
-    (let (l, _) = genCircleList 20 width height (initialSeed 2356) in l))
+    (let (l, _) = generateRandList 20 (randomizeBgCircle width height) (initialSeed 2356) in l))
 
 renderScene : Int -> Int -> GameData -> Element
 renderScene width height d = collage width height
