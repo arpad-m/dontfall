@@ -22,4 +22,4 @@ playerModel : Form
 playerModel = filled playerColor (rect 40 50)
 
 renderScene : Int -> Int -> GameData -> Element
-renderScene width height d = collage width height [move (d.characterPosX - (toFloat width / 2), 0) playerModel]
+renderScene width height d = collage width height [move (d.characterPosX - (toFloat width / 2), toFloat -height/ 2) playerModel]
