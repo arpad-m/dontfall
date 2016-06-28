@@ -8,7 +8,7 @@ import BaseStuff exposing (..)
 import Random exposing (..)
 
 platformColor : Color.Color
-platformColor = Color.rgb 30 19 67
+platformColor = Color.rgb 100 19 67
 
 plFill : Shape -> Form
 plFill = (filled platformColor)
@@ -49,11 +49,18 @@ backgroundColor = Color.rgb 30 19 67
 
 background : Float -> Float -> Form
 background width height = group
-    ([filled platformColor (rect width height)] ++
+    ([filled backgroundColor (rect width height)] ++
     (let (l, _) = generateRandList 20 (randomizeBgCircle width height >> listifyHelper) (initialSeed 2356) in l))
+
+renderPlatform : Float -> Float -> (Float, Float) -> Form
+renderPlatform width height (x, y) =
+    move (x - width / 2, y - height / 2) platformModel
 
 renderScene : Int -> Int -> GameData -> Element
 renderScene width height d = collage width height
-    [ background (toFloat width) (toFloat height)
-    , move (d.characterPosX - (toFloat width / 2), d.characterPosY - (toFloat height/ 2)) playerModel
-    ]
+    (
+        [ background (toFloat width) (toFloat height)
+        , move (d.characterPosX - (toFloat width / 2), d.characterPosY - (toFloat height/ 2)) playerModel
+        ]
+        ++ List.map (renderPlatform (toFloat width) (toFloat height)) d.platforms
+    )

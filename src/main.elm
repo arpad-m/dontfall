@@ -7,6 +7,8 @@ import Html.Events
 import Time
 import Element exposing (..)
 import Json.Decode as Decode exposing ((:=))
+import Random exposing (..)
+import Debug
 
 import BaseStuff exposing (..)
 import Render exposing (..)
@@ -14,8 +16,40 @@ import Render exposing (..)
 height = 600
 width = 300
 
+speed = 100 / 1000
+
+worldRandomize : Generator a -> GameData -> (a, GameData)
+worldRandomize gen d =
+    let
+        (gena, nseed) = step gen d.worldrand
+    in
+        (gena, { d | worldrand = nseed})
+
+oneIn : Int -> Generator Bool
+oneIn i = map ((==) 0) (int 0 i)
+
+maybeRandom : Generator a -> Generator (Maybe a)
+maybeRandom gen =
+    map2 (\b -> \c -> if b then Just c else Nothing) (oneIn 20) gen
+
+maybeAddPlatform : Float -> GameData -> GameData
+maybeAddPlatform pixeldiff d =
+    let (possiblyAPosition, ndata) =
+        worldRandomize (maybeRandom (float (-width/2) (width / 2))) d
+    in
+        case possiblyAPosition of
+            Just pos -> { ndata | platforms = ndata.platforms ++ [(pos, height)]}
+            Nothing -> ndata
+
 stepTime : GameData -> Time.Time -> GameData
-stepTime d t = {d | time = t }
+stepTime d t =
+    let
+        pixeldiff = Debug.log "HHH " (speed * Time.inMilliseconds (t - d.time))
+    in
+        let nd =
+            maybeAddPlatform pixeldiff d
+        in
+            {nd | platforms = (List.map (\(x,y) -> (x, y - pixeldiff)) (nd.platforms)), time = t}
 
 updateScene : GameMsg -> GameData -> (GameData, Cmd GameMsg)
 updateScene msg d =
