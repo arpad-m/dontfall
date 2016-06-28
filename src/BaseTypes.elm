@@ -4,6 +4,7 @@ module BaseTypes exposing (..)
 
 type alias GameData =
     { characterPosX : Float
+    , characterPosY : Float
     }
 
 type GameMsg = G | MouseMove (Float, Float) | S
@@ -13,4 +14,5 @@ type GameMsg = G | MouseMove (Float, Float) | S
 initGameData : GameData
 initGameData =
     { characterPosX = 0
+    , characterPosY = 0
     }
