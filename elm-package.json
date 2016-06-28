@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "summary": "Doodle jump clone",
+    "repository": "https://github.com/arpad-m/dontfall.git",
+    "license": "GPLv3.0+",
+    "source-directories": [
+        "src"
+    ],
+    "exposed-modules": [],
+    "dependencies": {
+        "elm-lang/core":       "4.0.0 <= v < 5.0.0",
+        "evancz/elm-graphics": "1.0.0 <= v < 1.0.1",
+        "elm-lang/html":       "1.0.0 <= v < 2.0.0"
+    },
+    "elm-version": "0.17.0 <= v < 0.18.0"
+}
