@@ -1,10 +1,10 @@
-index.html: src/*.elm elm-package.json
-	elm make src/main.elm
+main.js: src/*.elm elm-package.json
+	elm make src/main.elm --output=main.js
 
-all: index.html
+all: main.js
 
 clean:
-	rm -f index.html
+	rm -f main.js
 	rm -rf elm-stuff/
 
 .PHONY: all, clean
