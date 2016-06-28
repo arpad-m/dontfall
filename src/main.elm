@@ -8,6 +8,7 @@ import Time
 import Element exposing (..)
 import Json.Decode as Decode exposing ((:=))
 import Random exposing (..)
+import AnimationFrame
 import Debug
 
 import BaseStuff exposing (..)
@@ -71,7 +72,7 @@ render d = div [onMouseMove] [toHtml (renderScene width height d)]
 
 subscriptions : GameData -> Sub GameMsg
 subscriptions d =
-  Time.every (50 * Time.millisecond) Tick
+  AnimationFrame.times Tick
 
 main : Program Never
 main = Html.App.program
