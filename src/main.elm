@@ -37,7 +37,7 @@ render d = div [onMouseMove] [toHtml (renderScene width height d)]
 
 subscriptions : GameData -> Sub GameMsg
 subscriptions d =
-  Time.every Time.second Tick
+  Time.every (50 * Time.millisecond) Tick
 
 main : Program Never
 main = Html.App.program
