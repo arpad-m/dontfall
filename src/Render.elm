@@ -39,8 +39,6 @@ generateBgCircle : Float -> Float -> Generator Form
 generateBgCircle width height =
     map3 bgCircle (xgen width) (xgen height) (float 1 3)
 
-listifyHelper (y, s) = ([y], s)
-
 backgroundColor : Color.Color
 backgroundColor = Color.rgb 30 19 67
 
