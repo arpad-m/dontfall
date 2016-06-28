@@ -9,7 +9,6 @@ import Element exposing (..)
 import Json.Decode as Decode exposing ((:=))
 import Random exposing (..)
 import AnimationFrame
-import Debug
 
 import BaseStuff exposing (..)
 import Render exposing (..)
@@ -45,7 +44,7 @@ maybeAddPlatform pixeldiff d =
 stepTime : GameData -> Time.Time -> GameData
 stepTime d t =
     let
-        pixeldiff = Debug.log "HHH " (speed * Time.inMilliseconds (t - d.time))
+        pixeldiff = speed * Time.inMilliseconds (t - d.time)
     in
         let nd =
             maybeAddPlatform pixeldiff d
