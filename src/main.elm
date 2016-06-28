@@ -14,7 +14,7 @@ width = 300
 updateScene : GameMsg -> GameData -> GameData
 updateScene msg d =
     case msg of
-        MouseMove (x,_) -> { d | characterPosX = x}
+        MouseMove (x,_) -> { d | characterPosX = min x width}
         _ -> d
 
 onMouseMove : Attribute GameMsg
