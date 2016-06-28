@@ -4,7 +4,7 @@ import Element exposing (..)
 import Collage exposing (..)
 import Color
 
-import BaseTypes exposing (..)
+import BaseStuff exposing (..)
 import Random exposing (..)
 
 platformColor : Color.Color

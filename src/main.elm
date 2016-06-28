@@ -8,7 +8,7 @@ import Time
 import Element exposing (..)
 import Json.Decode as Decode exposing ((:=))
 
-import BaseTypes exposing (..)
+import BaseStuff exposing (..)
 import Render exposing (..)
 
 height = 600

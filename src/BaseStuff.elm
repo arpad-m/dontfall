@@ -1,4 +1,4 @@
-module BaseTypes exposing (..)
+module BaseStuff exposing (..)
 import Time exposing (Time)
 
 -- The actual types
