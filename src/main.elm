@@ -1,24 +1,20 @@
-import Collage exposing (..)
-import Element exposing (..)
 import Text exposing (..)
 import Html exposing (..)
 import Html.App
-import Color
+import Element exposing (..)
 
-b : Color.Color
-b = Color.rgb 67 76 67
+import BaseTypes exposing (..)
+import Render exposing (..)
 
-type GameData = A | B | C
-
-renderScene : GameData -> Html msg
-renderScene d = toHtml (collage 300 600 [filled b (rect 40 50)])
-
-updateScene : msg -> GameData -> GameData
+updateScene : GameMsg -> GameData -> GameData
 updateScene m d = A
+
+render : GameData -> Html GameMsg
+render d = div [] [toHtml (renderScene d)]
 
 main : Program Never
 main = Html.App.beginnerProgram
  { model = B
- , view = renderScene
+ , view = render
  , update = updateScene
  }
