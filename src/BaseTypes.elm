@@ -12,5 +12,5 @@ type GameMsg = G | MouseMove (Float, Float) | S
 
 initGameData : GameData
 initGameData =
-    { characterPosX = 80
+    { characterPosX = 0
     }
