@@ -35,12 +35,9 @@ bgCircle x y s = move (x, y) (outlined
 
 xgen x = (float (-x/2) (x/2))
 
-randomizeBgCircle : Float -> Float -> Seed -> (Form, Seed)
-randomizeBgCircle width height seed =
-    let (((xpos, ypos), csize), nseed) =
-        step (pair (pair (xgen width) (xgen height)) (float 1 3)) seed
-    in
-        (bgCircle xpos ypos csize, nseed)
+generateBgCircle : Float -> Float -> Generator Form
+generateBgCircle width height =
+    map3 bgCircle (xgen width) (xgen height) (float 1 3)
 
 listifyHelper (y, s) = ([y], s)
 
@@ -50,7 +47,7 @@ backgroundColor = Color.rgb 30 19 67
 background : Float -> Float -> Form
 background width height = group
     ([filled backgroundColor (rect width height)] ++
-    (let (l, _) = generateRandList 20 (randomizeBgCircle width height >> listifyHelper) (initialSeed 2356) in l))
+    (let (l, _) = step (Random.list 20 (generateBgCircle width height)) (initialSeed 2356) in l))
 
 renderPlatform : Float -> Float -> (Float, Float) -> Form
 renderPlatform width height (x, y) =
