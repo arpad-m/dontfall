@@ -59,8 +59,7 @@ renderPlatform width height (x, y) =
 renderScene : Int -> Int -> GameData -> Element
 renderScene width height d = collage width height
     (
-        [ background (toFloat width) (toFloat height)
-        , move (d.characterPosX - (toFloat width / 2), d.characterPosY - (toFloat height/ 2)) playerModel
-        ]
+        [ background (toFloat width) (toFloat height) ]
         ++ List.map (renderPlatform (toFloat width) (toFloat height)) d.platforms
+        ++ [ move (d.characterPosX - (toFloat width / 2), d.characterPosY - (toFloat height/ 2)) playerModel ]
     )
