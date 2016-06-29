@@ -7,3 +7,8 @@
 1. Get elm, version 0.17.0.
 2. Do `make`.
 3. Open the `index.html` file.
+
+## License
+
+Copyright (c) 2016 Arpad Müller. Licensed under the GNU GPL License, version 3 or (at your option) any later verson.
+See the [LICENSE](LICENSE) file for details.
