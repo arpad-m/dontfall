@@ -29,4 +29,4 @@ backgroundColor = Color.rgb 30 19 67
 background : Float -> Float -> Form
 background width height = group
     ([filled backgroundColor (rect width height)] ++
-    (let (l, _) = step (Random.list 20 (generateBgCircle width height)) (initialSeed 2356) in l))
+    (let (l, _) = step (Random.list (round <| width * height / 9000) (generateBgCircle width height)) (initialSeed 2356) in l))
