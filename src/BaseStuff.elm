@@ -7,7 +7,11 @@ import Background exposing (background)
 -- The actual types
 
 type alias GameData =
-    { characterPosX : Float
+    { width : Int
+    , height : Int
+    , flWidth : Float
+    , flHeight : Float
+    , characterPosX : Float
     , characterPosY : Float
     , time : Time
     , platforms : List (Float, Float)
@@ -19,15 +23,19 @@ type GameMsg = G | MouseMove (Float, Float) | Tick Time
 
 -- Base functions
 
-initGameData : Float -> Float -> (GameData, Cmd GameMsg)
+initGameData : Int -> Int -> (GameData, Cmd GameMsg)
 initGameData width height =
     (
-        { characterPosX = 0
+        { width = width
+        , height = height
+        , flWidth = toFloat width
+        , flHeight = toFloat height
+        , characterPosX = 0
         , characterPosY = 0
         , time = 0
         , platforms = []
         , worldrand = initialSeed 84763
-        , background = background width height
+        , background = background (toFloat width) (toFloat height)
         }
     , Cmd.none
     )

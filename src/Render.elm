@@ -26,12 +26,10 @@ renderPlatform : Float -> Float -> (Float, Float) -> Form
 renderPlatform width height (x, y) =
     move (x - width / 2, y - height / 2) platformModel
 
-renderScene : Int -> Int -> GameData -> Element
-renderScene width height d = collage width height
-    (let
-        (flWidth, flHeight) = (toFloat width, toFloat height)
-    in (
+renderScene : GameData -> Element
+renderScene d = collage d.width d.height
+    (
         [ d.background ]
-        ++ List.map (renderPlatform flWidth flHeight) d.platforms
-        ++ [ move (d.characterPosX - flWidth / 2, d.characterPosY - flHeight/ 2) playerModel ]
-    ))
+        ++ List.map (renderPlatform d.flWidth d.flHeight) d.platforms
+        ++ [ move (d.characterPosX - d.flWidth / 2, d.characterPosY - d.flHeight/ 2) playerModel ]
+    )

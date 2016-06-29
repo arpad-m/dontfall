@@ -35,7 +35,7 @@ maybeRandom gen =
 maybeAddPlatform : Float -> GameData -> GameData
 maybeAddPlatform pixeldiff d =
     let (possiblyAPosition, ndata) =
-        worldRandomize (maybeRandom (float (-width/2) (width / 2))) d
+        worldRandomize (maybeRandom (float (-d.flWidth/2) (d.flWidth / 2))) d
     in
         case possiblyAPosition of
             Just pos -> { ndata | platforms = ndata.platforms ++ [(pos, height)]}
@@ -54,7 +54,7 @@ stepTime d t =
 updateScene : GameMsg -> GameData -> (GameData, Cmd GameMsg)
 updateScene msg d =
     (case msg of
-        MouseMove (x,_) -> { d | characterPosX = min x width}
+        MouseMove (x,_) -> { d | characterPosX = min x d.flWidth}
         Tick t -> stepTime d t
         _ -> d
     , Cmd.none
@@ -67,7 +67,7 @@ onMouseMove =
       ("clientY" := Decode.float))
 
 render : GameData -> Html GameMsg
-render d = div [onMouseMove] [toHtml (renderScene width height d)]
+render d = div [onMouseMove] [toHtml (renderScene d)]
 
 subscriptions : GameData -> Sub GameMsg
 subscriptions d =
@@ -75,7 +75,7 @@ subscriptions d =
 
 main : Program Never
 main = Html.App.program
- { init = initGameData (toFloat width) (toFloat height)
+ { init = initGameData width height
  , view = render
  , update = updateScene
  , subscriptions = subscriptions
