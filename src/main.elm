@@ -13,9 +13,6 @@ import AnimationFrame
 import BaseStuff exposing (..)
 import Render exposing (..)
 
-height = 600
-width = 300
-
 speed = 100 / 1000
 
 worldRandomize : Generator a -> GameData -> (a, GameData)
@@ -38,7 +35,7 @@ maybeAddPlatform pixeldiff d =
         worldRandomize (maybeRandom (float (-d.flWidth/2) (d.flWidth / 2))) d
     in
         case possiblyAPosition of
-            Just pos -> { ndata | platforms = ndata.platforms ++ [(pos, height)]}
+            Just pos -> { ndata | platforms = ndata.platforms ++ [(pos, d.flHeight)]}
             Nothing -> ndata
 
 stepTime : GameData -> Time.Time -> GameData
@@ -73,9 +70,9 @@ subscriptions : GameData -> Sub GameMsg
 subscriptions d =
   AnimationFrame.times Tick
 
-main : Program Never
-main = Html.App.program
- { init = initGameData width height
+main : Program InitFlags
+main = Html.App.programWithFlags
+ { init = initGameData
  , view = render
  , update = updateScene
  , subscriptions = subscriptions
