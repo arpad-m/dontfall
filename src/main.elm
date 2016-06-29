@@ -75,7 +75,7 @@ subscriptions d =
 
 main : Program Never
 main = Html.App.program
- { init = initGameData
+ { init = initGameData (toFloat width) (toFloat height)
  , view = render
  , update = updateScene
  , subscriptions = subscriptions
