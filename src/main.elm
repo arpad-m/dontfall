@@ -32,7 +32,7 @@ maybeRandom bgen gen =
 maybeAddPlatform : Float -> GameData -> GameData
 maybeAddPlatform pixeldiff d =
     let (possiblyAPosition, ndata) =
-        worldRandomize (maybeRandom (oneIn 20) (float (-d.flWidth/2) (d.flWidth / 2))) d
+        worldRandomize (maybeRandom (oneIn 20) (float 0 d.flWidth)) d
     in
         case possiblyAPosition of
             Just pos -> { ndata | platforms = ndata.platforms ++ [(pos, d.flHeight)]}
