@@ -25,14 +25,14 @@ worldRandomize gen d =
 oneIn : Int -> Generator Bool
 oneIn i = map ((==) 0) (int 0 i)
 
-maybeRandom : Generator a -> Generator (Maybe a)
-maybeRandom gen =
-    map2 (\b -> \c -> if b then Just c else Nothing) (oneIn 20) gen
+maybeRandom : Generator Bool -> Generator a -> Generator (Maybe a)
+maybeRandom bgen gen =
+    map2 (\b -> \c -> if b then Just c else Nothing) bgen gen
 
 maybeAddPlatform : Float -> GameData -> GameData
 maybeAddPlatform pixeldiff d =
     let (possiblyAPosition, ndata) =
-        worldRandomize (maybeRandom (float (-d.flWidth/2) (d.flWidth / 2))) d
+        worldRandomize (maybeRandom (oneIn 20) (float (-d.flWidth/2) (d.flWidth / 2))) d
     in
         case possiblyAPosition of
             Just pos -> { ndata | platforms = ndata.platforms ++ [(pos, d.flHeight)]}
