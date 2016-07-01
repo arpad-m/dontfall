@@ -29,7 +29,12 @@ type alias GameData =
     , background : Form
     }
 
-type GameMsg = NothingHappened | MouseMove (Float, Float) | Tick Time | PauseToogle
+type GameMsg = NothingHappened
+    | MouseMove (Float, Float)
+    | Tick Time
+    | PauseToogle
+    | JumpDown
+    | JumpUp
 
 -- Base functions
 

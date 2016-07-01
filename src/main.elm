@@ -71,6 +71,8 @@ subscriptions d =
     Sub.batch
         [ AnimationFrame.times Tick
         , Keyboard.downs (\c -> if Char.fromCode c == 'P' then PauseToogle else NothingHappened)
+        , Keyboard.downs (\c -> if Char.fromCode c == ' ' then JumpDown else NothingHappened)
+        , Keyboard.ups (\c -> if Char.fromCode c == ' ' then JumpUp else NothingHappened)
         ]
 
 main : Program InitFlags
