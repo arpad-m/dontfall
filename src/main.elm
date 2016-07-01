@@ -19,6 +19,7 @@ import Render exposing (..)
 import Platforms exposing (getWorldPlatforms)
 
 speed = 100 / 1000
+playerSpeed = 234 / 1000
 
 addNewPlatforms : Float -> GameData -> GameData
 addNewPlatforms pixeldiff d =
@@ -30,6 +31,11 @@ removeOldPlatforms d = {
     platforms = List.filter (\(x, y) -> y - d.gameWinY >= -30) d.platforms
     }
 
+updatePlayerY : Time.Time -> GameData -> GameData
+updatePlayerY t d =
+    let pixeldiff = if d.jumpPressed then playerSpeed * Time.inMilliseconds (t - d.time) else 0 in
+        { d | characterPosY = pixeldiff + d.characterPosY }
+
 stepTime : GameData -> Time.Time -> GameData
 stepTime d t =
     let
@@ -37,6 +43,7 @@ stepTime d t =
     in
         d
         |> addNewPlatforms pixeldiff
+        |> updatePlayerY t
         |> \nd -> {nd | gameWinY = nd.gameWinY + pixeldiff, time = t}
         |> removeOldPlatforms
 
