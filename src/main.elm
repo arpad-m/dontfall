@@ -56,6 +56,7 @@ updateScene msg d =
     (if d.paused then
         case msg of
             PauseToogle -> { d | paused = not d.paused }
+            Tick t -> { d | time = t}
             _ -> d
     else
         case msg of
