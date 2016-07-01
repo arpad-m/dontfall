@@ -2,7 +2,9 @@ module BaseStuff exposing (..)
 import Time exposing (Time)
 import Random exposing (Seed, initialSeed)
 import Collage exposing (Form)
+
 import Background exposing (background)
+import Platforms exposing (getWorldPlatforms)
 
 -- The actual types
 
@@ -43,7 +45,8 @@ initGameData { width, height, seed } =
         , characterPosX = 0
         , characterPosY = 0
         , time = 0
-        , platforms = []
+        , platforms = getWorldPlatforms
+            { worldSeed = seed, flWidth = toFloat width } 0 (toFloat height)
         , worldSeed = seed
         , background = background (toFloat width) (toFloat height)
         }
