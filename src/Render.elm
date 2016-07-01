@@ -2,6 +2,7 @@ module Render exposing (renderScene)
 
 import Element exposing (..)
 import Collage exposing (..)
+import Text
 import Color
 
 import BaseStuff exposing (..)
@@ -26,10 +27,14 @@ renderPlatform : Float -> Float -> (Float, Float) -> Form
 renderPlatform width height (x, y) =
     move (x - width / 2, y - height / 2) platformModel
 
+pausedText : Text.Text
+pausedText = Text.color Color.white (Text.fromString "Game paused. Press [P] to resume.")
+
 renderScene : GameData -> Element
 renderScene d = collage d.width d.height
     (
         [ d.background ]
         ++ List.map (renderPlatform d.flWidth d.flHeight) d.platforms
         ++ [ move (d.characterPosX - d.flWidth / 2, d.characterPosY - d.flHeight/ 2) playerModel ]
+        ++ if d.paused then [ text pausedText ] else []
     )

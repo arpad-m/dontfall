@@ -9,6 +9,8 @@ import Element exposing (..)
 import Json.Decode as Decode exposing ((:=))
 import Random exposing (..)
 import AnimationFrame
+import Keyboard
+import Char
 
 import BaseStuff exposing (..)
 import Render exposing (..)
@@ -50,10 +52,17 @@ stepTime d t =
 
 updateScene : GameMsg -> GameData -> (GameData, Cmd GameMsg)
 updateScene msg d =
-    (case msg of
-        MouseMove (x,_) -> { d | characterPosX = min x d.flWidth}
-        Tick t -> stepTime d t
-        _ -> d
+
+    (if d.paused then
+        case msg of
+            PauseToogle -> { d | paused = not d.paused }
+            _ -> d
+    else
+        case msg of
+            MouseMove (x,_) -> { d | characterPosX = min x d.flWidth}
+            Tick t -> stepTime d t
+            PauseToogle -> { d | paused = not d.paused }
+            _ -> d
     , Cmd.none
     )
 
@@ -68,7 +77,10 @@ render d = div [onMouseMove] [toHtml (renderScene d)]
 
 subscriptions : GameData -> Sub GameMsg
 subscriptions d =
-  AnimationFrame.times Tick
+    Sub.batch
+        [ AnimationFrame.times Tick
+        , Keyboard.downs (\c -> if Char.fromCode c == 'P' then PauseToogle else NothingHappened)
+        ]
 
 main : Program InitFlags
 main = Html.App.programWithFlags

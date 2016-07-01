@@ -17,6 +17,7 @@ type alias GameData =
     , height : Int
     , flWidth : Float
     , flHeight : Float
+    , paused : Bool
     , characterPosX : Float
     , characterPosY : Float
     , time : Time
@@ -25,7 +26,7 @@ type alias GameData =
     , background : Form
     }
 
-type GameMsg = G | MouseMove (Float, Float) | Tick Time
+type GameMsg = NothingHappened | MouseMove (Float, Float) | Tick Time | PauseToogle
 
 -- Base functions
 
@@ -36,6 +37,7 @@ initGameData { width, height, seed } =
         , height = height
         , flWidth = toFloat width
         , flHeight = toFloat height
+        , paused = True
         , characterPosX = 0
         , characterPosY = 0
         , time = 0
