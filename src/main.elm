@@ -53,6 +53,8 @@ updateScene msg d =
             MouseMove (x,_) -> { d | characterPosX = min x d.flWidth}
             Tick t -> stepTime d t
             PauseToogle -> { d | paused = not d.paused }
+            JumpDown -> { d | jumpPressed = True }
+            JumpUp -> { d | jumpPressed = False }
             _ -> d
     , Cmd.none
     )

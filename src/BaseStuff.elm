@@ -20,6 +20,7 @@ type alias GameData =
     , flWidth : Float
     , flHeight : Float
     , paused : Bool
+    , jumpPressed : Bool
     , gameWinY : Float
     , characterPosX : Float
     , characterPosY : Float
@@ -46,6 +47,7 @@ initGameData { width, height, seed } =
         , flWidth = toFloat width
         , flHeight = toFloat height
         , paused = True
+        , jumpPressed = False
         , gameWinY = 0
         , characterPosX = 0
         , characterPosY = 0
