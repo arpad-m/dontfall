@@ -18,11 +18,12 @@ type alias GameData =
     , flWidth : Float
     , flHeight : Float
     , paused : Bool
+    , gameWinY : Float
     , characterPosX : Float
     , characterPosY : Float
     , time : Time
     , platforms : List (Float, Float)
-    , worldrand : Seed
+    , worldSeed : Int
     , background : Form
     }
 
@@ -38,11 +39,12 @@ initGameData { width, height, seed } =
         , flWidth = toFloat width
         , flHeight = toFloat height
         , paused = True
+        , gameWinY = 0
         , characterPosX = 0
         , characterPosY = 0
         , time = 0
         , platforms = []
-        , worldrand = (initialSeed seed)
+        , worldSeed = seed
         , background = background (toFloat width) (toFloat height)
         }
     , Cmd.none

@@ -23,9 +23,9 @@ playerColor = Color.rgb 0 128 0
 playerModel : Form
 playerModel = filled playerColor (rect 40 50)
 
-renderPlatform : Float -> Float -> (Float, Float) -> Form
-renderPlatform width height (x, y) =
-    move (x - width / 2, y - height / 2) platformModel
+renderPlatform : GameData -> (Float, Float) -> Form
+renderPlatform { flWidth, flHeight, gameWinY } (x, y) =
+    move (x - flWidth / 2, y - flHeight / 2 - gameWinY) platformModel
 
 pausedText : Text.Text
 pausedText = Text.color Color.white (Text.fromString "Game paused. Press [P] to resume.")
@@ -34,7 +34,7 @@ renderScene : GameData -> Element
 renderScene d = collage d.width d.height
     (
         [ d.background ]
-        ++ List.map (renderPlatform d.flWidth d.flHeight) d.platforms
+        ++ List.map (renderPlatform d) d.platforms
         ++ [ move (d.characterPosX - d.flWidth / 2, d.characterPosY - d.flHeight/ 2) playerModel ]
         ++ if d.paused then [ text pausedText ] else []
     )
