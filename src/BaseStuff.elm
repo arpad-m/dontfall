@@ -30,18 +30,18 @@ type GameMsg = G | MouseMove (Float, Float) | Tick Time
 -- Base functions
 
 initGameData : InitFlags -> (GameData, Cmd GameMsg)
-initGameData initFl =
+initGameData { width, height, seed } =
     (
-        { width = initFl.width
-        , height = initFl.height
-        , flWidth = toFloat initFl.width
-        , flHeight = toFloat initFl.height
+        { width = width
+        , height = height
+        , flWidth = toFloat width
+        , flHeight = toFloat height
         , characterPosX = 0
         , characterPosY = 0
         , time = 0
         , platforms = []
-        , worldrand = (initialSeed initFl.seed)
-        , background = background (toFloat initFl.width) (toFloat initFl.height)
+        , worldrand = (initialSeed seed)
+        , background = background (toFloat width) (toFloat height)
         }
     , Cmd.none
     )
