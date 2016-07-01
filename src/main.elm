@@ -60,8 +60,8 @@ updateScene msg d =
 onMouseMove : Attribute GameMsg
 onMouseMove =
   Html.Events.on "mousemove" (Decode.object2 (\x -> \y -> MouseMove (x, y))
-      ("clientX" := Decode.float)
-      ("clientY" := Decode.float))
+      ("offsetX" := Decode.float)
+      ("offsetY" := Decode.float))
 
 render : GameData -> Html GameMsg
 render d = div [onMouseMove] [toHtml (renderScene d)]
