@@ -31,10 +31,35 @@ removeOldPlatforms d = {
     platforms = List.filter (\(x, y) -> y - d.gameWinY >= -30) d.platforms
     }
 
+intsOverlap : Float -> Float -> Float -> Float -> Bool
+intsOverlap i j k l = (max i k) <= (min j l)
+
+smd : Float -> Float -> Bool
+smd a b = a <= b && a > b - 12
+
+playerStandsOnPlatform : GameData -> Bool
+playerStandsOnPlatform { platforms, characterPosX, characterPosY } =
+    List.any (\(plx, ply) -> (smd ply (characterPosY - (playerHeight / 2))) &&
+        intsOverlap (plx - (platformWidth / 2)) (plx + (platformWidth / 2)) (characterPosX - (playerWidth / 2)) (characterPosX + (playerWidth / 2))) platforms
+
+-- This is the usual jump parabole: raising at the start, then falling later on.
+-- Its not 0 at 0, but a small positive value,
+-- because otherwise we wouldn't get "off" a platform,
+-- and would be trapped on it forever. The small advancement
+-- gives us a small boost to get off the platform.
+calcJumpCurve : Float -> Float
+calcJumpCurve t = (250000 - (t - 500 + 30)^2) / 1000
+
 updatePlayerY : Time.Time -> GameData -> GameData
 updatePlayerY t d =
-    let pixeldiff = if d.jumpPressed then playerSpeed * Time.inMilliseconds (t - d.time) else 0 in
-        { d | characterPosY = pixeldiff + d.characterPosY }
+    if (not d.jumpPressed) && playerStandsOnPlatform d then d else
+    let startjump = (d.jumpPressed && playerStandsOnPlatform d) in
+        d
+        |> \nd -> (if startjump then {nd | jumpPressedTimeY = Just (t, nd.characterPosY)} else nd)
+        |> \nd -> case nd.jumpPressedTimeY of
+            Nothing -> {nd | jumpPressedTimeY = Just (t, nd.characterPosY)}
+            Just (ljt, ljy) -> let pixeldiff = (calcJumpCurve <| Time.inMilliseconds (t - ljt)) in
+                { nd | characterPosY = pixeldiff + ljy }
 
 stepTime : GameData -> Time.Time -> GameData
 stepTime d t =

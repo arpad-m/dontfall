@@ -21,6 +21,7 @@ type alias GameData =
     , flHeight : Float
     , paused : Bool
     , jumpPressed : Bool
+    , jumpPressedTimeY : Maybe (Time, Float)
     , gameWinY : Float
     , characterPosX : Float
     , characterPosY : Float
@@ -48,9 +49,10 @@ initGameData { width, height, seed } =
         , flHeight = toFloat height
         , paused = True
         , jumpPressed = False
+        , jumpPressedTimeY = Nothing
         , gameWinY = 0
         , characterPosX = 0
-        , characterPosY = 0
+        , characterPosY = 300
         , time = 0
         , platforms = getWorldPlatforms
             { worldSeed = seed, flWidth = toFloat width } 0 (toFloat height)
