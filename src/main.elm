@@ -82,7 +82,9 @@ updateScene msg d =
             _ -> d)
         Paused -> case msg of
             PauseToogle -> { d | state = Running }
-            Tick t -> { d | time = t}
+            Tick t -> { d
+                | time = t
+                , jumpPressedTimeY = Maybe.map (\(ljt,ljy) -> (ljt + t - d.time, ljy)) d.jumpPressedTimeY}
             _ -> d
         Running -> case msg of
             MouseMove (x,_) -> { d | characterPosX = min x d.flWidth}
