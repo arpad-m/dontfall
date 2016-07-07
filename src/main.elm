@@ -91,6 +91,7 @@ updateScene msg d =
     (case d.state of
         GameOver -> case msg of
             PauseToogle -> let r = resetGameData d in { r | state = Running, time = d.time }
+            Tick t -> { d | time = t}
             _ -> d
         Paused -> case msg of
             PauseToogle -> { d | state = Running }
