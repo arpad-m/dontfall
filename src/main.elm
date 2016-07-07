@@ -50,9 +50,21 @@ playerStandsOnPlatform { platforms, characterPosX, characterPosY } =
 calcJumpCurve : Float -> Float
 calcJumpCurve t = (250000 - (t - 500 + 30)^2) / 1000
 
+jumpTippingPoint : Float
+jumpTippingPoint = 430
+
+tippingPointY : Float
+tippingPointY = calcJumpCurve jumpTippingPoint
+
+jumpTippingPointTime : Time.Time
+jumpTippingPointTime = jumpTippingPoint * Time.millisecond
+
+putAtTippingPoint : Time.Time -> GameData -> GameData
+putAtTippingPoint t d = { d | jumpPressedTimeY = Maybe.map (\_ -> (t - jumpTippingPointTime, d.characterPosY - tippingPointY)) d.jumpPressedTimeY }
+
 updatePlayerY : Time.Time -> GameData -> GameData
 updatePlayerY t d =
-    if (not d.jumpPressed) && playerStandsOnPlatform d then d else
+    if (not d.jumpPressed) && playerStandsOnPlatform d then putAtTippingPoint t d else
     let startjump = (d.jumpPressed && playerStandsOnPlatform d) in
         d
         |> \nd -> (if startjump then {nd | jumpPressedTimeY = Just (t, nd.characterPosY)} else nd)
