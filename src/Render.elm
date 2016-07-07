@@ -7,6 +7,7 @@ module Render exposing
 
 import Element exposing (..)
 import Collage exposing (..)
+import String
 import Text
 import Color
 
@@ -44,6 +45,15 @@ renderPlatform { flWidth, flHeight, gameWinY } (x, y) =
 pausedText : Text.Text
 pausedText = Text.color Color.white (Text.fromString "Game paused. Press [P] to resume.")
 
+gameOverString : GameData -> String
+gameOverString { gameWinY } = String.concat ["Game over. Reached height: ", toString (round gameWinY)]
+
+gameOverText : GameData -> Text.Text
+gameOverText d = Text.color Color.white (Text.fromString (gameOverString d))
+
+newGameStartText : Text.Text
+newGameStartText = Text.color Color.white (Text.fromString "Press [P] to start new game.")
+
 renderScene : GameData -> Element
 renderScene d = collage d.width d.height
     (
@@ -51,4 +61,6 @@ renderScene d = collage d.width d.height
         ++ List.map (renderPlatform d) d.platforms
         ++ [ move (d.characterPosX - d.flWidth / 2, d.characterPosY - d.flHeight/ 2 - d.gameWinY) playerModel ]
         ++ if d.state == Paused then [ text pausedText ] else []
+        ++ if d.state == GameOver then [ text (gameOverText d),
+            move (0, -17) <| text newGameStartText ] else []
     )

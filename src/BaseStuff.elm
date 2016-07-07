@@ -16,6 +16,7 @@ type alias InitFlags =
 
 type GameState = Running
     | Paused
+    | GameOver
 
 type alias GameData =
     { width : Int
@@ -64,3 +65,9 @@ initGameData { width, height, seed } =
         }
     , Cmd.none
     )
+
+resetGameData : GameData -> GameData
+resetGameData { width, height, worldSeed } =
+    let (a, _) =
+        initGameData { width = width, height = height, seed = worldSeed + 1 }
+    in a

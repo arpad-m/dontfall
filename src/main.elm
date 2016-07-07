@@ -71,17 +71,20 @@ stepTime d t =
         |> updatePlayerY t
         |> \nd -> {nd | gameWinY = nd.gameWinY + pixeldiff, time = t}
         |> removeOldPlatforms
+        |> \nd -> if nd.characterPosY < nd.gameWinY then { nd | state = GameOver } else nd
 
 updateScene : GameMsg -> GameData -> (GameData, Cmd GameMsg)
 updateScene msg d =
 
-    (if d.state == Paused then
-        case msg of
+    (case d.state of
+        GameOver -> Debug.log "ZZ" (case msg of
+            PauseToogle -> let r = resetGameData d in { r | state = Running, time = d.time }
+            _ -> d)
+        Paused -> case msg of
             PauseToogle -> { d | state = Running }
             Tick t -> { d | time = t}
             _ -> d
-    else
-        case msg of
+        Running -> case msg of
             MouseMove (x,_) -> { d | characterPosX = min x d.flWidth}
             Tick t -> stepTime d t
             PauseToogle -> { d | state = Paused }
