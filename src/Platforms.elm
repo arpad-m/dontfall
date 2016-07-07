@@ -16,9 +16,6 @@ seedAtPoint i j = initialSeed <| Murmur3.hashString i (toString j)
 worldRandomizeAtPoint : Int -> Int -> Generator a -> a
 worldRandomizeAtPoint worldSeed p gen = let (s, _) = step gen (seedAtPoint worldSeed p) in s
 
-rangeTo : Int -> List Int
-rangeTo a = List.indexedMap (\i -> \v -> i) (List.repeat a ())
-
 platformDistance : Float
 platformDistance = 30
 
@@ -31,8 +28,8 @@ ipldf f = (toFloat f) * platformDistance
 getWorldPlatforms { worldSeed, flWidth } yOffs pixeldiff =
     let (oldYInt, newYInt) = (pldf yOffs, pldf (yOffs + pixeldiff)) in
         List.filterMap
-            (\n -> worldRandomizeAtPoint worldSeed (n + oldYInt)
-                (maybeRandom (oneIn 2) (Random.map (\x -> (x, ipldf (n + oldYInt))) (float 0 flWidth)))
+            (\n -> worldRandomizeAtPoint worldSeed n
+                (maybeRandom (oneIn 2) (Random.map (\x -> (x, ipldf n)) (float 0 flWidth)))
             )
-            (rangeTo (newYInt - oldYInt))
+            [oldYInt .. newYInt - 1]
 
