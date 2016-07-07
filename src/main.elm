@@ -77,9 +77,9 @@ updateScene : GameMsg -> GameData -> (GameData, Cmd GameMsg)
 updateScene msg d =
 
     (case d.state of
-        GameOver -> Debug.log "ZZ" (case msg of
+        GameOver -> case msg of
             PauseToogle -> let r = resetGameData d in { r | state = Running, time = d.time }
-            _ -> d)
+            _ -> d
         Paused -> case msg of
             PauseToogle -> { d | state = Running }
             Tick t -> { d
