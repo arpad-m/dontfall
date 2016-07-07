@@ -28,8 +28,6 @@ ipldf f = (toFloat f) * platformDistance
 getWorldPlatforms { worldSeed, flWidth } yOffs pixeldiff =
     let (oldYInt, newYInt) = (pldf yOffs, pldf (yOffs + pixeldiff)) in
         List.filterMap
-            (\n -> worldRandomizeAtPoint worldSeed n
-                (maybeRandom (oneIn 2) (Random.map (\x -> (x, ipldf n)) (float 0 flWidth)))
-            )
-            [oldYInt .. newYInt - 1]
+            (\(n, mx) -> Maybe.map (\x -> (x, ipldf n)) mx)
+            (List.map2 (,) [oldYInt .. newYInt - 1] (worldRandomizeAtPoint worldSeed oldYInt (Random.list (newYInt - oldYInt) (maybeRandom (oneIn 2) (float 0 flWidth)))))
 
