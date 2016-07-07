@@ -75,16 +75,16 @@ stepTime d t =
 updateScene : GameMsg -> GameData -> (GameData, Cmd GameMsg)
 updateScene msg d =
 
-    (if d.paused then
+    (if d.state == Paused then
         case msg of
-            PauseToogle -> { d | paused = not d.paused }
+            PauseToogle -> { d | state = Running }
             Tick t -> { d | time = t}
             _ -> d
     else
         case msg of
             MouseMove (x,_) -> { d | characterPosX = min x d.flWidth}
             Tick t -> stepTime d t
-            PauseToogle -> { d | paused = not d.paused }
+            PauseToogle -> { d | state = Paused }
             JumpDown -> { d | jumpPressed = True }
             JumpUp -> { d | jumpPressed = False }
             _ -> d

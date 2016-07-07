@@ -50,5 +50,5 @@ renderScene d = collage d.width d.height
         [ d.background ]
         ++ List.map (renderPlatform d) d.platforms
         ++ [ move (d.characterPosX - d.flWidth / 2, d.characterPosY - d.flHeight/ 2 - d.gameWinY) playerModel ]
-        ++ if d.paused then [ text pausedText ] else []
+        ++ if d.state == Paused then [ text pausedText ] else []
     )

@@ -14,12 +14,15 @@ type alias InitFlags =
     , seed : Int
     }
 
+type GameState = Running
+    | Paused
+
 type alias GameData =
     { width : Int
     , height : Int
     , flWidth : Float
     , flHeight : Float
-    , paused : Bool
+    , state : GameState
     , jumpPressed : Bool
     , jumpPressedTimeY : Maybe (Time, Float)
     , gameWinY : Float
@@ -47,7 +50,7 @@ initGameData { width, height, seed } =
         , height = height
         , flWidth = toFloat width
         , flHeight = toFloat height
-        , paused = True
+        , state = Paused
         , jumpPressed = False
         , jumpPressedTimeY = Nothing
         , gameWinY = 0
