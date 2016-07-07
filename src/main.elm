@@ -37,10 +37,14 @@ intsOverlap i j k l = (max i k) <= (min j l)
 smd : Float -> Float -> Bool
 smd a b = a <= b && a > b - 12
 
+playerAndPlatformCollide : Float -> Float -> (Float, Float) -> Bool
+playerAndPlatformCollide characterPosX characterPosY (plx, ply) =
+    (smd ply (characterPosY - (playerHeight / 2))) &&
+        intsOverlap (plx - (platformWidth / 2)) (plx + (platformWidth / 2)) (characterPosX - (playerWidth / 2)) (characterPosX + (playerWidth / 2))
+
 playerStandsOnPlatform : GameData -> Bool
 playerStandsOnPlatform { platforms, characterPosX, characterPosY } =
-    List.any (\(plx, ply) -> (smd ply (characterPosY - (playerHeight / 2))) &&
-        intsOverlap (plx - (platformWidth / 2)) (plx + (platformWidth / 2)) (characterPosX - (playerWidth / 2)) (characterPosX + (playerWidth / 2))) platforms
+    List.any (playerAndPlatformCollide characterPosX characterPosY) platforms
 
 -- This is the usual jump parabole: raising at the start, then falling later on.
 -- Its not 0 at 0, but a small positive value,
