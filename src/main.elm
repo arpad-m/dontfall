@@ -171,11 +171,14 @@ render d = div [onMouseMove] [toHtml (renderScene d)]
 subscriptions : GameData -> Sub GameMsg
 subscriptions d =
     Sub.batch
-        [ AnimationFrame.diffs Tick
-        , Keyboard.downs (\c -> if Char.fromCode c == 'P' then PauseToogle else NothingHappened)
-        , Keyboard.downs (\c -> if Char.fromCode c == ' ' then JumpDown else NothingHappened)
-        , Keyboard.ups (\c -> if Char.fromCode c == ' ' then JumpUp else NothingHappened)
-        ]
+        ([ Keyboard.downs (\c -> if Char.fromCode c == 'P' then PauseToogle else NothingHappened) ] ++
+            if d.state == Running then
+                [ AnimationFrame.diffs Tick
+                , Keyboard.downs (\c -> if Char.fromCode c == ' ' then JumpDown else NothingHappened)
+                , Keyboard.ups (\c -> if Char.fromCode c == ' ' then JumpUp else NothingHappened)
+                ]
+            else
+                [])
 
 main : Program InitFlags
 main = Html.App.programWithFlags
