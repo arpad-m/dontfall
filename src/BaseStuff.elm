@@ -49,7 +49,7 @@ initGameData { width, height, seed } = (initGameData' width height (initialSeed 
 
 initGameData' width height seed =
   let
-    (platforms, nextSeed) = Random.step (genPlatforms (toFloat width) 0 (toFloat height)) seed
+    (platforms, nextSeed) = Random.step (genPlatforms (toFloat width) 0 (toFloat (2 * height))) seed
   in  
         { width = width
         , height = height

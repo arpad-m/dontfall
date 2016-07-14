@@ -23,7 +23,7 @@ playerSpeed = 234 / 1000
 addNewPlatforms : Float -> GameData -> GameData
 addNewPlatforms pixeldiff d =
   let
-    (newPlatforms, nextSeed) = step (genPlatforms d.flWidth (d.gameWinY + d.flHeight) pixeldiff) d.seed
+    (newPlatforms, nextSeed) = step (genPlatforms d.flWidth (d.gameWinY + 2 * d.flHeight) pixeldiff) d.seed
   in  
     { d | platforms = newPlatforms ++ d.platforms, seed = nextSeed}
 
