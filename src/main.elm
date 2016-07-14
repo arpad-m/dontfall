@@ -19,12 +19,17 @@ import Platforms exposing (genPlatforms, platformDistance)
 
 speed { gameWinY } = (min 3 <| max 1 <| gameWinY / 5000) * 100 / 1000
 
-addNewPlatforms : Float -> GameData -> GameData
+addNewPlatforms : Float -> GameData -> Generator GameData
 addNewPlatforms pixeldiff d =
+    Random.map (\newPlatforms -> { d | platforms = newPlatforms ++ d.platforms })
+        (genPlatforms d.flWidth (d.gameWinY + 2 * d.flHeight) pixeldiff)
+
+worldstep : (GameData -> Generator GameData) -> GameData -> GameData
+worldstep f d =
   let
-    (newPlatforms, nextSeed) = step (genPlatforms d.flWidth (d.gameWinY + 2 * d.flHeight) pixeldiff) d.seed
+    (nd, nextSeed) = step (f d) d.seed
   in  
-    { d | platforms = newPlatforms ++ d.platforms, seed = nextSeed}
+    { nd | seed = nextSeed}
 
 -- This constant should be lower than the maximum value of the jump parabole.
 platformMaxDistance : Float
@@ -42,18 +47,21 @@ getPlatformsWithGapsAbove platforms = List.filterMap (\(_, ply) ->
 
 -- Fill the gaps between the platforms
 -- so that the player has the possibility to survive
-fillInPlatforms : GameData -> GameData
+fillInPlatforms : GameData -> Generator GameData
 fillInPlatforms d =
-    let
+    (let
         fillerplatforms = (getPlatformsWithGapsAbove d.platforms
         |> List.concatMap (\(ply, cnt) ->
             if cnt == 0 then
                 []
             else
-                List.map (\n -> (30, ply + (toFloat n) * platformMaxDistance)) [1 .. cnt]
+                List.map (\n -> ply + (toFloat n) * platformMaxDistance) [1 .. cnt]
         ))
     in
-        { d | platforms = (d.platforms ++ fillerplatforms) }
+        Random.map (List.map2 (\ply -> \plx -> (plx, ply)) fillerplatforms)
+            (Random.list (List.length fillerplatforms) (float 0 d.flWidth))
+    )
+    |> Random.map (\fillerplatforms -> { d | platforms = (d.platforms ++ fillerplatforms) })
 
 removeOldPlatforms : GameData -> GameData
 removeOldPlatforms d = {
@@ -131,8 +139,7 @@ stepTime d t =
             (d.characterPosY - (d.gameWinY + d.flHeight))
     in
         d
-        |> addNewPlatforms pixeldiff
-        |> fillInPlatforms
+        |> worldstep (\nd -> (Random.andThen (addNewPlatforms pixeldiff nd) fillInPlatforms))
         |> \nd -> {nd | jumpPressedDurationY = Maybe.map (\(tdiff, y) -> (tdiff + t, y)) nd.jumpPressedDurationY }
         |> updatePlayerY t
         |> \nd -> {nd | gameWinY = nd.gameWinY + pixeldiff}
