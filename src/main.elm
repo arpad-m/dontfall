@@ -61,7 +61,7 @@ fillInPlatforms d =
                 List.map (\n -> ply + (toFloat n) * platformMaxDistance) [1 .. cnt]
         ))
     in
-        Random.map (List.map2 (\ply -> \plx -> (plx, ply)) fillerplatforms)
+        Random.map (\rl -> (List.map2 (,) rl fillerplatforms))
             (Random.list (List.length fillerplatforms) (float 0 d.flWidth))
     )
     |> Random.map (\fillerplatforms -> { d | platforms = (d.platforms ++ fillerplatforms) })
