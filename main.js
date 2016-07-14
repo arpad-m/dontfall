@@ -10913,9 +10913,7 @@ var _arpad_m$dontfall$BaseStuff$GameData = function (a) {
 										return function (k) {
 											return function (l) {
 												return function (m) {
-													return function (n) {
-														return {width: a, height: b, flWidth: c, flHeight: d, state: e, jumpPressed: f, jumpPressedTimeY: g, gameWinY: h, characterPosX: i, characterPosY: j, time: k, platforms: l, seed: m, background: n};
-													};
+													return {width: a, height: b, flWidth: c, flHeight: d, state: e, jumpPressed: f, jumpPressedDurationY: g, gameWinY: h, characterPosX: i, characterPosY: j, platforms: k, seed: l, background: m};
 												};
 											};
 										};
@@ -10950,11 +10948,10 @@ var _arpad_m$dontfall$BaseStuff$initGameData$ = F3(
 			flHeight: _elm_lang$core$Basics$toFloat(height),
 			state: _arpad_m$dontfall$BaseStuff$Paused,
 			jumpPressed: false,
-			jumpPressedTimeY: _elm_lang$core$Maybe$Nothing,
+			jumpPressedDurationY: _elm_lang$core$Maybe$Nothing,
 			gameWinY: 0,
 			characterPosX: 0,
 			characterPosY: 500,
-			time: 0,
 			platforms: platforms,
 			seed: nextSeed,
 			background: A2(
@@ -11623,28 +11620,34 @@ var _arpad_m$dontfall$Render$renderScene = function (d) {
 
 var _arpad_m$dontfall$Main$subscriptions = function (d) {
 	return _elm_lang$core$Platform_Sub$batch(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$animation_frame$AnimationFrame$times(_arpad_m$dontfall$BaseStuff$Tick),
-				_elm_lang$keyboard$Keyboard$downs(
-				function (c) {
-					return _elm_lang$core$Native_Utils.eq(
-						_elm_lang$core$Char$fromCode(c),
-						_elm_lang$core$Native_Utils.chr('P')) ? _arpad_m$dontfall$BaseStuff$PauseToogle : _arpad_m$dontfall$BaseStuff$NothingHappened;
-				}),
-				_elm_lang$keyboard$Keyboard$downs(
-				function (c) {
-					return _elm_lang$core$Native_Utils.eq(
-						_elm_lang$core$Char$fromCode(c),
-						_elm_lang$core$Native_Utils.chr(' ')) ? _arpad_m$dontfall$BaseStuff$JumpDown : _arpad_m$dontfall$BaseStuff$NothingHappened;
-				}),
-				_elm_lang$keyboard$Keyboard$ups(
-				function (c) {
-					return _elm_lang$core$Native_Utils.eq(
-						_elm_lang$core$Char$fromCode(c),
-						_elm_lang$core$Native_Utils.chr(' ')) ? _arpad_m$dontfall$BaseStuff$JumpUp : _arpad_m$dontfall$BaseStuff$NothingHappened;
-				})
-			]));
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$keyboard$Keyboard$downs(
+					function (c) {
+						return _elm_lang$core$Native_Utils.eq(
+							_elm_lang$core$Char$fromCode(c),
+							_elm_lang$core$Native_Utils.chr('P')) ? _arpad_m$dontfall$BaseStuff$PauseToogle : _arpad_m$dontfall$BaseStuff$NothingHappened;
+					})
+				]),
+			_elm_lang$core$Native_Utils.eq(d.state, _arpad_m$dontfall$BaseStuff$Running) ? _elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$animation_frame$AnimationFrame$diffs(_arpad_m$dontfall$BaseStuff$Tick),
+					_elm_lang$keyboard$Keyboard$downs(
+					function (c) {
+						return _elm_lang$core$Native_Utils.eq(
+							_elm_lang$core$Char$fromCode(c),
+							_elm_lang$core$Native_Utils.chr(' ')) ? _arpad_m$dontfall$BaseStuff$JumpDown : _arpad_m$dontfall$BaseStuff$NothingHappened;
+					}),
+					_elm_lang$keyboard$Keyboard$ups(
+					function (c) {
+						return _elm_lang$core$Native_Utils.eq(
+							_elm_lang$core$Char$fromCode(c),
+							_elm_lang$core$Native_Utils.chr(' ')) ? _arpad_m$dontfall$BaseStuff$JumpUp : _arpad_m$dontfall$BaseStuff$NothingHappened;
+					})
+				]) : _elm_lang$core$Native_List.fromArray(
+				[])));
 };
 var _arpad_m$dontfall$Main$onMouseMove = A2(
 	_elm_lang$html$Html_Events$on,
@@ -11675,15 +11678,14 @@ var _arpad_m$dontfall$Main$calcJumpCurve = function (t) {
 	return (250000 - Math.pow(t - 500, 2)) / 1000;
 };
 var _arpad_m$dontfall$Main$tippingPointY = _arpad_m$dontfall$Main$calcJumpCurve(_arpad_m$dontfall$Main$jumpTippingPoint);
-var _arpad_m$dontfall$Main$putAtTippingPoint = F2(
-	function (t, d) {
-		return _elm_lang$core$Native_Utils.update(
-			d,
-			{
-				jumpPressedTimeY: _elm_lang$core$Maybe$Just(
-					{ctor: '_Tuple2', _0: t - _arpad_m$dontfall$Main$jumpTippingPointTime, _1: d.characterPosY - _arpad_m$dontfall$Main$tippingPointY})
-			});
-	});
+var _arpad_m$dontfall$Main$putAtTippingPoint = function (d) {
+	return _elm_lang$core$Native_Utils.update(
+		d,
+		{
+			jumpPressedDurationY: _elm_lang$core$Maybe$Just(
+				{ctor: '_Tuple2', _0: _arpad_m$dontfall$Main$jumpTippingPointTime, _1: d.characterPosY - _arpad_m$dontfall$Main$tippingPointY})
+		});
+};
 var _arpad_m$dontfall$Main$smd = F2(
 	function (a, b) {
 		return (_elm_lang$core$Native_Utils.cmp(a, b) < 1) && (_elm_lang$core$Native_Utils.cmp(a, b - 12) > 0);
@@ -11741,13 +11743,13 @@ var _arpad_m$dontfall$Main$playerCollidesDuringFall = F2(
 	});
 var _arpad_m$dontfall$Main$updatePlayerY = F2(
 	function (t, d) {
-		var _p12 = d.jumpPressedTimeY;
+		var _p12 = d.jumpPressedDurationY;
 		if (_p12.ctor === 'Nothing') {
-			return A2(_arpad_m$dontfall$Main$putAtTippingPoint, t, d);
+			return _arpad_m$dontfall$Main$putAtTippingPoint(d);
 		} else {
 			var _p14 = _p12._0._1;
 			var pixeldiff = _arpad_m$dontfall$Main$calcJumpCurve(
-				_elm_lang$core$Time$inMilliseconds(t - _p12._0._0));
+				_elm_lang$core$Time$inMilliseconds(_p12._0._0));
 			var _p13 = A2(_arpad_m$dontfall$Main$playerCollidesDuringFall, pixeldiff + _p14, d);
 			if (_p13.ctor === 'Nothing') {
 				return _elm_lang$core$Native_Utils.update(
@@ -11759,10 +11761,10 @@ var _arpad_m$dontfall$Main$updatePlayerY = F2(
 						return d.jumpPressed ? _elm_lang$core$Native_Utils.update(
 							nd,
 							{
-								jumpPressedTimeY: _elm_lang$core$Maybe$Just(
-									{ctor: '_Tuple2', _0: t, _1: nd.characterPosY}),
+								jumpPressedDurationY: _elm_lang$core$Maybe$Just(
+									{ctor: '_Tuple2', _0: 0, _1: nd.characterPosY}),
 								characterPosY: nd.characterPosY + 1
-							}) : A2(_arpad_m$dontfall$Main$putAtTippingPoint, t, nd);
+							}) : _arpad_m$dontfall$Main$putAtTippingPoint(nd);
 					}(
 						_elm_lang$core$Native_Utils.update(
 							nd,
@@ -11796,6 +11798,7 @@ var _arpad_m$dontfall$Main$getClosestAbove = F2(
 				},
 				l));
 	});
+var _arpad_m$dontfall$Main$littleDelta = 0.1 * _arpad_m$dontfall$Platforms$platformDistance;
 var _arpad_m$dontfall$Main$platformMaxDistance = 8 * _arpad_m$dontfall$Platforms$platformDistance;
 var _arpad_m$dontfall$Main$getPlatformsWithGapsAbove = function (platforms) {
 	return A2(
@@ -11809,7 +11812,7 @@ var _arpad_m$dontfall$Main$getPlatformsWithGapsAbove = function (platforms) {
 					return {
 						ctor: '_Tuple2',
 						_0: _p22,
-						_1: _elm_lang$core$Basics$floor((yb - _p22) / _arpad_m$dontfall$Main$platformMaxDistance)
+						_1: _elm_lang$core$Basics$floor(((yb - _p22) - _arpad_m$dontfall$Main$littleDelta) / _arpad_m$dontfall$Main$platformMaxDistance)
 					};
 				},
 				A2(_arpad_m$dontfall$Main$getClosestAbove, platforms, _p22));
@@ -11817,44 +11820,69 @@ var _arpad_m$dontfall$Main$getPlatformsWithGapsAbove = function (platforms) {
 		platforms);
 };
 var _arpad_m$dontfall$Main$fillInPlatforms = function (d) {
-	var fillerplatforms = A2(
-		_elm_lang$core$List$concatMap,
-		function (_p23) {
-			var _p24 = _p23;
-			var _p25 = _p24._1;
-			return _elm_lang$core$Native_Utils.eq(_p25, 0) ? _elm_lang$core$Native_List.fromArray(
-				[]) : A2(
-				_elm_lang$core$List$map,
-				function (n) {
-					return {
-						ctor: '_Tuple2',
-						_0: 30,
-						_1: _p24._0 + (_elm_lang$core$Basics$toFloat(n) * _arpad_m$dontfall$Main$platformMaxDistance)
-					};
-				},
-				_elm_lang$core$Native_List.range(1, _p25));
+	return A2(
+		_elm_lang$core$Random$map,
+		function (fillerplatforms) {
+			return _elm_lang$core$Native_Utils.update(
+				d,
+				{
+					platforms: A2(_elm_lang$core$Basics_ops['++'], d.platforms, fillerplatforms)
+				});
 		},
-		_arpad_m$dontfall$Main$getPlatformsWithGapsAbove(d.platforms));
-	return _elm_lang$core$Native_Utils.update(
-		d,
-		{
-			platforms: A2(_elm_lang$core$Basics_ops['++'], d.platforms, fillerplatforms)
-		});
+		function () {
+			var fillerplatforms = A2(
+				_elm_lang$core$List$concatMap,
+				function (_p23) {
+					var _p24 = _p23;
+					var _p25 = _p24._1;
+					return _elm_lang$core$Native_Utils.eq(_p25, 0) ? _elm_lang$core$Native_List.fromArray(
+						[]) : A2(
+						_elm_lang$core$List$map,
+						function (n) {
+							return _p24._0 + (_elm_lang$core$Basics$toFloat(n) * _arpad_m$dontfall$Main$platformMaxDistance);
+						},
+						_elm_lang$core$Native_List.range(1, _p25));
+				},
+				_arpad_m$dontfall$Main$getPlatformsWithGapsAbove(d.platforms));
+			return A2(
+				_elm_lang$core$Random$map,
+				A2(
+					_elm_lang$core$List$map2,
+					F2(
+						function (ply, plx) {
+							return {ctor: '_Tuple2', _0: plx, _1: ply};
+						}),
+					fillerplatforms),
+				A2(
+					_elm_lang$core$Random$list,
+					_elm_lang$core$List$length(fillerplatforms),
+					A2(_elm_lang$core$Random$float, 0, d.flWidth)));
+		}());
 };
-var _arpad_m$dontfall$Main$addNewPlatforms = F2(
-	function (pixeldiff, d) {
+var _arpad_m$dontfall$Main$worldstep = F2(
+	function (f, d) {
 		var _p26 = A2(
 			_elm_lang$core$Random$step,
-			A3(_arpad_m$dontfall$Platforms$genPlatforms, d.flWidth, d.gameWinY + (2 * d.flHeight), pixeldiff),
+			f(d),
 			d.seed);
-		var newPlatforms = _p26._0;
+		var nd = _p26._0;
 		var nextSeed = _p26._1;
 		return _elm_lang$core$Native_Utils.update(
-			d,
-			{
-				platforms: A2(_elm_lang$core$Basics_ops['++'], newPlatforms, d.platforms),
-				seed: nextSeed
-			});
+			nd,
+			{seed: nextSeed});
+	});
+var _arpad_m$dontfall$Main$addNewPlatforms = F2(
+	function (pixeldiff, d) {
+		return A2(
+			_elm_lang$core$Random$map,
+			function (newPlatforms) {
+				return _elm_lang$core$Native_Utils.update(
+					d,
+					{
+						platforms: A2(_elm_lang$core$Basics_ops['++'], newPlatforms, d.platforms)
+					});
+			},
+			A3(_arpad_m$dontfall$Platforms$genPlatforms, d.flWidth, d.gameWinY + (2 * d.flHeight), pixeldiff));
 	});
 var _arpad_m$dontfall$Main$speed = function (_p27) {
 	var _p28 = _p27;
@@ -11867,88 +11895,88 @@ var _arpad_m$dontfall$Main$stepTime = F2(
 	function (d, t) {
 		var pixeldiff = A2(
 			_elm_lang$core$Basics$max,
-			_arpad_m$dontfall$Main$speed(d) * _elm_lang$core$Time$inMilliseconds(t - d.time),
+			_arpad_m$dontfall$Main$speed(d) * _elm_lang$core$Time$inMilliseconds(t),
 			d.characterPosY - (d.gameWinY + d.flHeight));
 		return function (nd) {
 			return function (nd) {
-				return (_elm_lang$core$Native_Utils.cmp(nd.characterPosY, nd.gameWinY) < 0) ? _elm_lang$core$Native_Utils.update(
-					nd,
-					{state: _arpad_m$dontfall$BaseStuff$GameOver}) : nd;
+				return function (nd) {
+					return (_elm_lang$core$Native_Utils.cmp(nd.characterPosY, nd.gameWinY) < 0) ? _elm_lang$core$Native_Utils.update(
+						nd,
+						{state: _arpad_m$dontfall$BaseStuff$GameOver}) : nd;
+				}(
+					_arpad_m$dontfall$Main$removeOldPlatforms(
+						_elm_lang$core$Native_Utils.update(
+							nd,
+							{gameWinY: nd.gameWinY + pixeldiff})));
 			}(
-				_arpad_m$dontfall$Main$removeOldPlatforms(
+				A2(
+					_arpad_m$dontfall$Main$updatePlayerY,
+					t,
 					_elm_lang$core$Native_Utils.update(
 						nd,
-						{gameWinY: nd.gameWinY + pixeldiff, time: t})));
+						{
+							jumpPressedDurationY: A2(
+								_elm_lang$core$Maybe$map,
+								function (_p29) {
+									var _p30 = _p29;
+									return {ctor: '_Tuple2', _0: _p30._0 + t, _1: _p30._1};
+								},
+								nd.jumpPressedDurationY)
+						})));
 		}(
 			A2(
-				_arpad_m$dontfall$Main$updatePlayerY,
-				t,
-				_arpad_m$dontfall$Main$fillInPlatforms(
-					A2(_arpad_m$dontfall$Main$addNewPlatforms, pixeldiff, d))));
+				_arpad_m$dontfall$Main$worldstep,
+				function (nd) {
+					return A2(
+						_elm_lang$core$Random$andThen,
+						A2(_arpad_m$dontfall$Main$addNewPlatforms, pixeldiff, nd),
+						_arpad_m$dontfall$Main$fillInPlatforms);
+				},
+				d));
 	});
 var _arpad_m$dontfall$Main$updateScene = F2(
 	function (msg, d) {
 		return {
 			ctor: '_Tuple2',
 			_0: function () {
-				var _p29 = d.state;
-				switch (_p29.ctor) {
+				var _p31 = d.state;
+				switch (_p31.ctor) {
 					case 'GameOver':
-						var _p30 = msg;
-						switch (_p30.ctor) {
-							case 'PauseToogle':
-								var r = _arpad_m$dontfall$BaseStuff$resetGameData(d);
-								return _elm_lang$core$Native_Utils.update(
-									r,
-									{state: _arpad_m$dontfall$BaseStuff$Running, time: d.time});
-							case 'Tick':
-								return _elm_lang$core$Native_Utils.update(
-									d,
-									{time: _p30._0});
-							default:
-								return d;
+						var _p32 = msg;
+						if (_p32.ctor === 'PauseToogle') {
+							var r = _arpad_m$dontfall$BaseStuff$resetGameData(d);
+							return _elm_lang$core$Native_Utils.update(
+								r,
+								{state: _arpad_m$dontfall$BaseStuff$Running});
+						} else {
+							return d;
 						}
 					case 'Paused':
-						var _p31 = msg;
-						switch (_p31.ctor) {
-							case 'PauseToogle':
-								return _elm_lang$core$Native_Utils.update(
-									d,
-									{state: _arpad_m$dontfall$BaseStuff$Running});
-							case 'Tick':
-								var _p34 = _p31._0;
-								return _elm_lang$core$Native_Utils.update(
-									d,
-									{
-										time: _p34,
-										jumpPressedTimeY: A2(
-											_elm_lang$core$Maybe$map,
-											function (_p32) {
-												var _p33 = _p32;
-												return {ctor: '_Tuple2', _0: (_p33._0 + _p34) - d.time, _1: _p33._1};
-											},
-											d.jumpPressedTimeY)
-									});
-							default:
-								return d;
+						var _p33 = msg;
+						if (_p33.ctor === 'PauseToogle') {
+							return _elm_lang$core$Native_Utils.update(
+								d,
+								{state: _arpad_m$dontfall$BaseStuff$Running});
+						} else {
+							return d;
 						}
 					default:
-						var _p35 = msg;
+						var _p34 = msg;
 						_v15_5:
 						do {
-							switch (_p35.ctor) {
+							switch (_p34.ctor) {
 								case 'MouseMove':
-									if (_p35._0.ctor === '_Tuple2') {
+									if (_p34._0.ctor === '_Tuple2') {
 										return _elm_lang$core$Native_Utils.update(
 											d,
 											{
-												characterPosX: A2(_elm_lang$core$Basics$min, _p35._0._0, d.flWidth)
+												characterPosX: A2(_elm_lang$core$Basics$min, _p34._0._0, d.flWidth)
 											});
 									} else {
 										break _v15_5;
 									}
 								case 'Tick':
-									return A2(_arpad_m$dontfall$Main$stepTime, d, _p35._0);
+									return A2(_arpad_m$dontfall$Main$stepTime, d, _p34._0);
 								case 'PauseToogle':
 									return _elm_lang$core$Native_Utils.update(
 										d,
