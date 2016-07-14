@@ -15,7 +15,7 @@ import Debug
 
 import BaseStuff exposing (..)
 import Render exposing (..)
-import Platforms exposing (genPlatforms)
+import Platforms exposing (genPlatforms, platformDistance)
 import Util exposing (..)
 
 speed { gameWinY } = (min 3 <| max 1 <| gameWinY / 5000) * 100 / 1000
@@ -26,6 +26,35 @@ addNewPlatforms pixeldiff d =
     (newPlatforms, nextSeed) = step (genPlatforms d.flWidth (d.gameWinY + 2 * d.flHeight) pixeldiff) d.seed
   in  
     { d | platforms = newPlatforms ++ d.platforms, seed = nextSeed}
+
+-- This constant should be lower than the maximum value of the jump parabole.
+platformMaxDistance : Float
+platformMaxDistance = 8 * platformDistance
+
+getClosestAbove : List (Float, Float) -> Float -> Maybe Float
+getClosestAbove l py = l
+    |> List.filterMap (\(x, y) -> if y > py then Just y else Nothing)
+    |> smallestInList
+
+getPlatformsWithGapsAbove : List (Float, Float) -> List (Float, Int)
+getPlatformsWithGapsAbove platforms = List.filterMap (\(_, ply) ->
+    Maybe.map (\yb -> (ply, floor <| (yb - ply) / platformMaxDistance))
+        (getClosestAbove platforms ply)) platforms
+
+-- Fill the gaps between the platforms
+-- so that the player has the possibility to survive
+fillInPlatforms : GameData -> GameData
+fillInPlatforms d =
+    let
+        fillerplatforms = (getPlatformsWithGapsAbove d.platforms
+        |> List.concatMap (\(ply, cnt) ->
+            if cnt == 0 then
+                []
+            else
+                List.map (\n -> (30, ply + (toFloat n) * platformMaxDistance)) [1 .. cnt]
+        ))
+    in
+        { d | platforms = (d.platforms ++ fillerplatforms) }
 
 removeOldPlatforms : GameData -> GameData
 removeOldPlatforms d = {
@@ -104,6 +133,7 @@ stepTime d t =
     in
         d
         |> addNewPlatforms pixeldiff
+        |> fillInPlatforms
         |> updatePlayerY t
         |> \nd -> {nd | gameWinY = nd.gameWinY + pixeldiff, time = t}
         |> removeOldPlatforms

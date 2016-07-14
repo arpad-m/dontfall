@@ -25,4 +25,3 @@ genPlatforms flWidth yOffs pixeldiff =
         List.filterMap
             (\(n, mx) -> Maybe.map (\x -> (x, ipldf n)) mx)
             ) <| (Random.map (List.map2 (,) [oldYInt .. newYInt - 1]) (Random.list (newYInt - oldYInt) (maybeRandom (oneIn 2) (float 0 flWidth))))
-
