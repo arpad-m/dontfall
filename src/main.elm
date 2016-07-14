@@ -41,14 +41,41 @@ playerXcollidesWithPlatform : Float -> (Float, Float) -> Bool
 playerXcollidesWithPlatform characterPosX (plx, ply) =
     intsOverlap (plx - (platformWidth / 2)) (plx + (platformWidth / 2)) (characterPosX - (playerWidth / 2)) (characterPosX + (playerWidth / 2))
 
-playerAndPlatformCollide : Float -> Float -> (Float, Float) -> Bool
-playerAndPlatformCollide characterPosX characterPosY (plx, ply) =
-    (smd ply (characterPosY - (playerHeight / 2))) &&
-        playerXcollidesWithPlatform characterPosX (plx, ply)
+playerCollidesPlatformInFall : Float -> Float -> Float -> (Float, Float) -> Bool
+playerCollidesPlatformInFall characterPosX characterPosYmin characterPosYmax (plx, ply) =
+    playerXcollidesWithPlatform characterPosX (plx, ply) &&
+        (characterPosYmin - (playerHeight / 2)) <= ply &&
+        (characterPosYmax - (playerHeight / 2)) >= ply
 
-playerStandsOnPlatform : GameData -> Bool
-playerStandsOnPlatform { platforms, characterPosX, characterPosY } =
-    List.any (playerAndPlatformCollide characterPosX characterPosY) platforms
+extremestWith : (a -> a -> a) -> List a -> Maybe a
+extremestWith ext l =
+    case (List.head l, List.tail l) of
+        (Nothing, Nothing) -> Nothing
+        (Just hd, Just tl) -> Just (case extremestWith ext tl of
+            Nothing -> hd
+            Just d -> ext d hd)
+        _ -> Nothing -- error, may not happen
+
+biggestInList : List comparable -> Maybe comparable
+biggestInList = extremestWith (\v w -> if v > w then v else w)
+
+smallestInList : List comparable -> Maybe comparable
+smallestInList = extremestWith (\v w -> if v < w then v else w)
+
+-- Returns Just f if a player collides with a platform,
+-- with the player being at y coord f
+-- Returns Noting if there is no collision
+playerCollidesDuringFall : Float -> GameData -> Maybe Float
+playerCollidesDuringFall newCharacterPosY { characterPosX, characterPosY, platforms } =
+    let (minPosY, maxPosY) =
+        (min characterPosY newCharacterPosY, max characterPosY newCharacterPosY)
+    in
+        List.filter (\pl -> playerCollidesPlatformInFall characterPosX minPosY maxPosY pl) platforms
+        |> List.map (\(plx, ply) -> ply)
+        -- If we fall, we need the highest platform we collide with,
+        -- If we jump, we need the lowest one.
+        |> (if newCharacterPosY < characterPosY then biggestInList else smallestInList)
+        |> Maybe.map (\p -> p + (playerHeight / 2))
 
 -- This is the usual jump parabole: raising at the start, then falling later on.
 -- Its not 0 at 0, but a small positive value,
@@ -68,18 +95,22 @@ jumpTippingPointTime : Time.Time
 jumpTippingPointTime = jumpTippingPoint * Time.millisecond
 
 putAtTippingPoint : Time.Time -> GameData -> GameData
-putAtTippingPoint t d = { d | jumpPressedTimeY = Maybe.map (\_ -> (t - jumpTippingPointTime, d.characterPosY - tippingPointY)) d.jumpPressedTimeY }
+putAtTippingPoint t d = { d | jumpPressedTimeY = Just (t - jumpTippingPointTime, d.characterPosY - tippingPointY) }
 
 updatePlayerY : Time.Time -> GameData -> GameData
 updatePlayerY t d =
-    if (not d.jumpPressed) && playerStandsOnPlatform d then putAtTippingPoint t d else
-    let startjump = (d.jumpPressed && playerStandsOnPlatform d) in
-        d
-        |> \nd -> (if startjump then {nd | jumpPressedTimeY = Just (t, nd.characterPosY)} else nd)
-        |> \nd -> case nd.jumpPressedTimeY of
-            Nothing -> {nd | jumpPressedTimeY = Just (t, nd.characterPosY)}
-            Just (ljt, ljy) -> let pixeldiff = (calcJumpCurve <| Time.inMilliseconds (t - ljt)) in
-                { nd | characterPosY = pixeldiff + ljy }
+    case d.jumpPressedTimeY of
+        Nothing -> putAtTippingPoint t d
+        Just (ljt, ljy) -> let
+                pixeldiff = (calcJumpCurve <| Time.inMilliseconds (t - ljt))
+            in
+                case playerCollidesDuringFall (pixeldiff + ljy) d of
+                    Nothing -> { d | characterPosY = pixeldiff + ljy }
+                    Just y -> d
+                        |> \nd -> { nd | characterPosY = y }
+                        |> \nd -> (if d.jumpPressed then
+                                {nd | jumpPressedTimeY = Just (t, nd.characterPosY), characterPosY = nd.characterPosY + 1}
+                            else putAtTippingPoint t nd)
 
 stepTime : GameData -> Time.Time -> GameData
 stepTime d t =
