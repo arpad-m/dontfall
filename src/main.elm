@@ -16,7 +16,6 @@ import Debug
 import BaseStuff exposing (..)
 import Render exposing (..)
 import Platforms exposing (genPlatforms, platformDistance)
-import Util exposing (..)
 
 speed { gameWinY } = (min 3 <| max 1 <| gameWinY / 5000) * 100 / 1000
 
@@ -34,7 +33,7 @@ platformMaxDistance = 8 * platformDistance
 getClosestAbove : List (Float, Float) -> Float -> Maybe Float
 getClosestAbove l py = l
     |> List.filterMap (\(x, y) -> if y > py then Just y else Nothing)
-    |> smallestInList
+    |> List.minimum
 
 getPlatformsWithGapsAbove : List (Float, Float) -> List (Float, Int)
 getPlatformsWithGapsAbove platforms = List.filterMap (\(_, ply) ->
@@ -90,7 +89,7 @@ playerCollidesDuringFall newCharacterPosY { characterPosX, characterPosY, platfo
         |> List.map (\(plx, ply) -> ply)
         -- If we fall, we need the highest platform we collide with,
         -- If we jump, we need the lowest one.
-        |> (if newCharacterPosY < characterPosY then biggestInList else smallestInList)
+        |> (if newCharacterPosY < characterPosY then List.maximum else List.minimum)
         |> Maybe.map (\p -> p + (playerHeight / 2))
 
 -- This is the usual jump parabole: raising at the start, then falling later on.
