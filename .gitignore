@@ -1,0 +1,5 @@
+# Everything, but the three interesting files:
+*
+!main.js
+!index.html
+!.gitignore
