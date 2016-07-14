@@ -17,7 +17,7 @@ import BaseStuff exposing (..)
 import Render exposing (..)
 import Platforms exposing (genPlatforms)
 
-speed = 100 / 1000
+speed { gameWinY } = (min 3 <| max 1 <| gameWinY / 5000) * 100 / 1000
 
 addNewPlatforms : Float -> GameData -> GameData
 addNewPlatforms pixeldiff d =
@@ -113,7 +113,7 @@ stepTime : GameData -> Time.Time -> GameData
 stepTime d t =
     let
         pixeldiff = max
-            (speed * Time.inMilliseconds (t - d.time))
+            (speed d * Time.inMilliseconds (t - d.time))
             (d.characterPosY - (d.gameWinY + d.flHeight))
     in
         d
