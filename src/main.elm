@@ -117,7 +117,9 @@ updatePlayerY t d =
 stepTime : GameData -> Time.Time -> GameData
 stepTime d t =
     let
-        pixeldiff = speed * Time.inMilliseconds (t - d.time)
+        pixeldiff = max
+            (speed * Time.inMilliseconds (t - d.time))
+            (d.characterPosY - (d.gameWinY + d.flHeight))
     in
         d
         |> addNewPlatforms pixeldiff
