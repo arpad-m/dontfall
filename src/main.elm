@@ -37,10 +37,14 @@ intsOverlap i j k l = (max i k) <= (min j l)
 smd : Float -> Float -> Bool
 smd a b = a <= b && a > b - 12
 
+playerXcollidesWithPlatform : Float -> (Float, Float) -> Bool
+playerXcollidesWithPlatform characterPosX (plx, ply) =
+    intsOverlap (plx - (platformWidth / 2)) (plx + (platformWidth / 2)) (characterPosX - (playerWidth / 2)) (characterPosX + (playerWidth / 2))
+
 playerAndPlatformCollide : Float -> Float -> (Float, Float) -> Bool
 playerAndPlatformCollide characterPosX characterPosY (plx, ply) =
     (smd ply (characterPosY - (playerHeight / 2))) &&
-        intsOverlap (plx - (platformWidth / 2)) (plx + (platformWidth / 2)) (characterPosX - (playerWidth / 2)) (characterPosX + (playerWidth / 2))
+        playerXcollidesWithPlatform characterPosX (plx, ply)
 
 playerStandsOnPlatform : GameData -> Bool
 playerStandsOnPlatform { platforms, characterPosX, characterPosY } =
