@@ -105,36 +105,37 @@ tippingPointY = calcJumpCurve jumpTippingPoint
 jumpTippingPointTime : Time.Time
 jumpTippingPointTime = jumpTippingPoint * Time.millisecond
 
-putAtTippingPoint : Time.Time -> GameData -> GameData
-putAtTippingPoint t d = { d | jumpPressedTimeY = Just (t - jumpTippingPointTime, d.characterPosY - tippingPointY) }
+putAtTippingPoint : GameData -> GameData
+putAtTippingPoint d = { d | jumpPressedDurationY = Just (jumpTippingPointTime, d.characterPosY - tippingPointY) }
 
 updatePlayerY : Time.Time -> GameData -> GameData
 updatePlayerY t d =
-    case d.jumpPressedTimeY of
-        Nothing -> putAtTippingPoint t d
+    case d.jumpPressedDurationY of
+        Nothing -> putAtTippingPoint d
         Just (ljt, ljy) -> let
-                pixeldiff = (calcJumpCurve <| Time.inMilliseconds (t - ljt))
+                pixeldiff = (calcJumpCurve <| Time.inMilliseconds ljt)
             in
                 case playerCollidesDuringFall (pixeldiff + ljy) d of
                     Nothing -> { d | characterPosY = pixeldiff + ljy }
                     Just y -> d
                         |> \nd -> { nd | characterPosY = y }
                         |> \nd -> (if d.jumpPressed then
-                                {nd | jumpPressedTimeY = Just (t, nd.characterPosY), characterPosY = nd.characterPosY + 1}
-                            else putAtTippingPoint t nd)
+                                {nd | jumpPressedDurationY = Just (0, nd.characterPosY), characterPosY = nd.characterPosY + 1}
+                            else putAtTippingPoint nd)
 
 stepTime : GameData -> Time.Time -> GameData
 stepTime d t =
     let
         pixeldiff = max
-            (speed d * Time.inMilliseconds (t - d.time))
+            (speed d * Time.inMilliseconds t)
             (d.characterPosY - (d.gameWinY + d.flHeight))
     in
         d
         |> addNewPlatforms pixeldiff
         |> fillInPlatforms
+        |> \nd -> {nd | jumpPressedDurationY = Maybe.map (\(tdiff, y) -> (tdiff + t, y)) nd.jumpPressedDurationY }
         |> updatePlayerY t
-        |> \nd -> {nd | gameWinY = nd.gameWinY + pixeldiff, time = t}
+        |> \nd -> {nd | gameWinY = nd.gameWinY + pixeldiff}
         |> removeOldPlatforms
         |> \nd -> if nd.characterPosY < nd.gameWinY then { nd | state = GameOver } else nd
 
@@ -143,14 +144,10 @@ updateScene msg d =
 
     (case d.state of
         GameOver -> case msg of
-            PauseToogle -> let r = resetGameData d in { r | state = Running, time = d.time }
-            Tick t -> { d | time = t}
+            PauseToogle -> let r = resetGameData d in { r | state = Running }
             _ -> d
         Paused -> case msg of
             PauseToogle -> { d | state = Running }
-            Tick t -> { d
-                | time = t
-                , jumpPressedTimeY = Maybe.map (\(ljt,ljy) -> (ljt + t - d.time, ljy)) d.jumpPressedTimeY}
             _ -> d
         Running -> case msg of
             MouseMove (x,_) -> { d | characterPosX = min x d.flWidth}
@@ -174,7 +171,7 @@ render d = div [onMouseMove] [toHtml (renderScene d)]
 subscriptions : GameData -> Sub GameMsg
 subscriptions d =
     Sub.batch
-        [ AnimationFrame.times Tick
+        [ AnimationFrame.diffs Tick
         , Keyboard.downs (\c -> if Char.fromCode c == 'P' then PauseToogle else NothingHappened)
         , Keyboard.downs (\c -> if Char.fromCode c == ' ' then JumpDown else NothingHappened)
         , Keyboard.ups (\c -> if Char.fromCode c == ' ' then JumpUp else NothingHappened)

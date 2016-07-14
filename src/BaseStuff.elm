@@ -25,11 +25,10 @@ type alias GameData =
     , flHeight : Float
     , state : GameState
     , jumpPressed : Bool
-    , jumpPressedTimeY : Maybe (Time, Float)
+    , jumpPressedDurationY : Maybe (Time, Float)
     , gameWinY : Float
     , characterPosX : Float
     , characterPosY : Float
-    , time : Time
     , platforms : List (Float, Float)
     , seed : Seed
     , background : Form
@@ -57,11 +56,10 @@ initGameData' width height seed =
         , flHeight = toFloat height
         , state = Paused
         , jumpPressed = False
-        , jumpPressedTimeY = Nothing
+        , jumpPressedDurationY = Nothing
         , gameWinY = 0
         , characterPosX = 0
         , characterPosY = 500
-        , time = 0
         , platforms = platforms
         , seed = nextSeed
         , background = background (toFloat width) (toFloat height)
