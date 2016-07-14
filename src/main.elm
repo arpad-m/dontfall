@@ -35,6 +35,9 @@ worldstep f d =
 platformMaxDistance : Float
 platformMaxDistance = 8 * platformDistance
 
+littleDelta : Float
+littleDelta = 0.1 * platformDistance
+
 getClosestAbove : List (Float, Float) -> Float -> Maybe Float
 getClosestAbove l py = l
     |> List.filterMap (\(x, y) -> if y > py then Just y else Nothing)
@@ -42,7 +45,7 @@ getClosestAbove l py = l
 
 getPlatformsWithGapsAbove : List (Float, Float) -> List (Float, Int)
 getPlatformsWithGapsAbove platforms = List.filterMap (\(_, ply) ->
-    Maybe.map (\yb -> (ply, floor <| (yb - ply) / platformMaxDistance))
+    Maybe.map (\yb -> (ply, floor <| (yb - ply - littleDelta) / platformMaxDistance))
         (getClosestAbove platforms ply)) platforms
 
 -- Fill the gaps between the platforms
