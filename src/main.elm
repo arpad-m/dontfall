@@ -16,6 +16,7 @@ import Debug
 import BaseStuff exposing (..)
 import Render exposing (..)
 import Platforms exposing (genPlatforms)
+import Util exposing (..)
 
 speed { gameWinY } = (min 3 <| max 1 <| gameWinY / 5000) * 100 / 1000
 
@@ -47,21 +48,6 @@ playerCollidesPlatformInFall characterPosX characterPosYmin characterPosYmax (pl
     playerXcollidesWithPlatform characterPosX (plx, ply) &&
         (characterPosYmin - (playerHeight / 2)) <= ply &&
         (characterPosYmax - (playerHeight / 2)) >= ply
-
-extremestWith : (a -> a -> a) -> List a -> Maybe a
-extremestWith ext l =
-    case (List.head l, List.tail l) of
-        (Nothing, Nothing) -> Nothing
-        (Just hd, Just tl) -> Just (case extremestWith ext tl of
-            Nothing -> hd
-            Just d -> ext d hd)
-        _ -> Nothing -- error, may not happen
-
-biggestInList : List comparable -> Maybe comparable
-biggestInList = extremestWith (\v w -> if v > w then v else w)
-
-smallestInList : List comparable -> Maybe comparable
-smallestInList = extremestWith (\v w -> if v < w then v else w)
 
 -- Returns Just f if a player collides with a platform,
 -- with the player being at y coord f
