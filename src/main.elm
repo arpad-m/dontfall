@@ -18,7 +18,6 @@ import Render exposing (..)
 import Platforms exposing (genPlatforms)
 
 speed = 100 / 1000
-playerSpeed = 234 / 1000
 
 addNewPlatforms : Float -> GameData -> GameData
 addNewPlatforms pixeldiff d =
