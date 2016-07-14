@@ -80,15 +80,11 @@ playerCollidesDuringFall newCharacterPosY { characterPosX, characterPosY, platfo
         |> Maybe.map (\p -> p + (playerHeight / 2))
 
 -- This is the usual jump parabole: raising at the start, then falling later on.
--- Its not 0 at 0, but a small positive value,
--- because otherwise we wouldn't get "off" a platform,
--- and would be trapped on it forever. The small advancement
--- gives us a small boost to get off the platform.
 calcJumpCurve : Float -> Float
-calcJumpCurve t = (250000 - (t - 500 + 30)^2) / 1000
+calcJumpCurve t = (250000 - (t - 500)^2) / 1000
 
 jumpTippingPoint : Float
-jumpTippingPoint = 430
+jumpTippingPoint = 460
 
 tippingPointY : Float
 tippingPointY = calcJumpCurve jumpTippingPoint
