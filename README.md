@@ -4,6 +4,8 @@
 
 [Playable online version](https://arpad-m.github.io/dontfall/).
 
+Controls: mouse for movement, spacebar to jump. Press P for pause.
+
 ## Usage
 
 1. Get elm, version 0.17.0.
