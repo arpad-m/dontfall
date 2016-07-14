@@ -11,19 +11,21 @@ import Random exposing (..)
 import AnimationFrame
 import Keyboard
 import Char
-import Murmur3
 import Debug
 
 import BaseStuff exposing (..)
 import Render exposing (..)
-import Platforms exposing (getWorldPlatforms)
+import Platforms exposing (genPlatforms)
 
 speed = 100 / 1000
 playerSpeed = 234 / 1000
 
 addNewPlatforms : Float -> GameData -> GameData
 addNewPlatforms pixeldiff d =
-    { d | platforms = getWorldPlatforms d (d.gameWinY + d.flHeight) pixeldiff ++ d.platforms}
+  let
+    (newPlatforms, nextSeed) = step (genPlatforms d.flWidth (d.gameWinY + d.flHeight) pixeldiff) d.seed
+  in  
+    { d | platforms = newPlatforms ++ d.platforms, seed = nextSeed}
 
 removeOldPlatforms : GameData -> GameData
 removeOldPlatforms d = {

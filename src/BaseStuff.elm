@@ -4,7 +4,7 @@ import Random exposing (Seed, initialSeed)
 import Collage exposing (Form)
 
 import Background exposing (background)
-import Platforms exposing (getWorldPlatforms)
+import Platforms exposing (genPlatforms)
 
 -- The actual types
 
@@ -31,7 +31,7 @@ type alias GameData =
     , characterPosY : Float
     , time : Time
     , platforms : List (Float, Float)
-    , worldSeed : Int
+    , seed : Seed
     , background : Form
     }
 
@@ -45,8 +45,12 @@ type GameMsg = NothingHappened
 -- Base functions
 
 initGameData : InitFlags -> (GameData, Cmd GameMsg)
-initGameData { width, height, seed } =
-    (
+initGameData { width, height, seed } = (initGameData' width height (initialSeed seed), Cmd.none)
+
+initGameData' width height seed =
+  let
+    (platforms, nextSeed) = Random.step (genPlatforms (toFloat width) 0 (toFloat height)) seed
+  in  
         { width = width
         , height = height
         , flWidth = toFloat width
@@ -58,16 +62,11 @@ initGameData { width, height, seed } =
         , characterPosX = 0
         , characterPosY = 300
         , time = 0
-        , platforms = getWorldPlatforms
-            { worldSeed = seed, flWidth = toFloat width } 0 (toFloat height)
-        , worldSeed = seed
+        , platforms = platforms
+        , seed = nextSeed
         , background = background (toFloat width) (toFloat height)
         }
-    , Cmd.none
-    )
 
 resetGameData : GameData -> GameData
-resetGameData { width, height, worldSeed } =
-    let (a, _) =
-        initGameData { width = width, height = height, seed = worldSeed + 1 }
-    in a
+resetGameData { width, height, seed } =
+        initGameData' width height seed
