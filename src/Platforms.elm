@@ -18,10 +18,13 @@ pldf f = floor (f / platformDistance)
 ipldf : Int -> Float
 ipldf f = (toFloat f) * platformDistance
 
+heightIn : Float -> Int
+heightIn yOffs = max 2 <| min 10 <| (1 + (floor <| yOffs / 10000))
+
 genPlatforms : Float -> Float -> Float -> Generator (List (Float, Float))
 genPlatforms flWidth yOffs pixeldiff =
     let (oldYInt, newYInt) = (pldf yOffs, pldf (yOffs + pixeldiff)) in
         Random.map (    
         List.filterMap
             (\(n, mx) -> Maybe.map (\x -> (x, ipldf n)) mx)
-            ) <| (Random.map (List.map2 (,) [oldYInt .. newYInt - 1]) (Random.list (newYInt - oldYInt) (maybeRandom (oneIn 2) (float 0 flWidth))))
+            ) <| (Random.map (List.map2 (,) [oldYInt .. newYInt - 1]) (Random.list (newYInt - oldYInt) (maybeRandom (oneIn <| heightIn yOffs) (float 0 flWidth))))
